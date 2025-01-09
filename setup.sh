@@ -31,10 +31,10 @@ while [ ! -f "eula.txt" ]; do
   sleep 1
 done
 
-# Stop the server gracefully
+# Stop the server after eula.txt is created
 echo "Stopping the server..."
 kill "$SERVER_PID"
-sleep 5  # Allow the server process to stop completely
+sleep 5  # Allow the process to stop
 
 # Accept EULA
 echo "Accepting EULA..."
@@ -44,17 +44,21 @@ echo "eula=true" > eula.txt
 echo "Starting the server to load plugins..."
 java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
-sleep 60  # Reduced wait time to avoid freezing
+
+# Wait for GeyserMC config.yml to be created
+echo "Waiting for GeyserMC config.yml to be generated..."
+while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
+  sleep 1  # Check every second until the file exists
+done
+
+# Stop the server after config.yml is created
+echo "Stopping the server after plugins are initialized..."
 kill "$PLUGIN_SERVER_PID"
+sleep 5  # Allow the process to stop
 
 # Modify GeyserMC auth-type to floodgate
 echo "Modifying GeyserMC config.yml..."
-if [ -f "plugins/Geyser-Spigot/config.yml" ]; then
-  sed -i 's/auth-type: .*/auth-type: floodgate/' plugins/Geyser-Spigot/config.yml
-else
-  echo "Error: GeyserMC config.yml not found!"
-  exit 1
-fi
+sed -i 's/auth-type: .*/auth-type: floodgate/' plugins/Geyser-Spigot/config.yml
 
 # Final server start
 echo "Starting the server with final configuration..."
