@@ -6,7 +6,7 @@ Creating a minecraft server on a raspberry-pi for bedrock and java players
 - raspberry pi 4 (os installed)
 
 ## get-started
-- Place the setup.sh script into your home directory of your user. This will prevent any permission issues.
+- place the setup.sh script into your home directory of your user. This will prevent any permission issues.
 - open a terminal in this directory and run: bash setup.sh
 
 ## good to know
