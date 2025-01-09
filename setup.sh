@@ -18,16 +18,16 @@ cd ..
 
 #first server initialization
 java -Xms2G -Xmx4G -jar papermcserver.jar nogui
-sleep 20
+sleep 10
 echo "eula=true" > eula.txt
 
 # 6. Start the server to load plugins
 echo "Starting the server again to load plugins..."
 java -Xms2G -Xmx4G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
-sleep 30  # Wait 30 seconds to ensure all plugins are loaded
+sleep 120  # Wait 120 seconds to ensure all plugins are loaded
 kill "$PLUGIN_SERVER_PID"
 
 cd plugins/Geyser-Spigot
 sed -i 's/auth-type: .*/auth-type: floodgate/' config.yml
-screen -dmS papermcserver java -Xms1G -Xmx2G -jar papermcserver.jar nogui
+java -Xms2G -Xmx4G -jar papermcserver.jar nogui
