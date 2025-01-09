@@ -20,23 +20,26 @@ wget -O Geyser-Spigot.jar https://download.geysermc.org/v2/projects/geyser/versi
 wget -O floodgate-spigot.jar https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
 cd ..
 
-# First server initialization (run in background and stop after 15 seconds)
+# First server initialization (run in the background)
 echo "Starting the server for initialization..."
 java -Xms2G -Xmx3G -jar papermcserver.jar nogui &
-SERVER_PID=$!
-sleep 15  # Wait 15 seconds to generate files
+
+# Wait for `eula.txt` to be generated
+echo "Waiting for eula.txt to be generated..."
+while [ ! -f "eula.txt" ]; do
+  sleep 1  # Check every second until the file exists
+done
+
+# Stop the server once `eula.txt` is generated
+echo "Stopping the server after eula.txt was created..."
+SERVER_PID=$(pgrep -f papermcserver.jar)
 kill "$SERVER_PID"
 
 # Accept EULA
 echo "Accepting EULA..."
-if [ -f "eula.txt" ]; then
-  echo "eula=true" > eula.txt
-else
-  echo "Error: eula.txt not found!"
-  exit 1
-fi
+echo "eula=true" > eula.txt
 
-# Start the server to load plugins and wait for plugin initialization
+# Start the server to load plugins
 echo "Starting the server again to load plugins..."
 java -Xms2G -Xmx3G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
