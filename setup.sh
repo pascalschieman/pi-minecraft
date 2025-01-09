@@ -4,17 +4,16 @@
 sudo apt install wget -y
 wget -O zulu-jdk.deb 'https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jdk23.0.1-linux_arm64.deb?_gl=1*9354sk*_gcl_au*MTQxMTg2Mzg5Mi4xNzM2Mjc3Nzg0*_ga*NjM5NTk4NDU5LjE3MzYyNzc3ODQ.*_ga_42DEGWGYD5*MTczNjI3Nzc4NC4xLjEuMTczNjI3ODEyMC41OS4wLjA.'
 sudo dpkg -i zulu-jdk.deb
-sudo apt --fix-broken install -y  # Fix broken dependencies
-rm zulu-jdk.deb  # Remove .deb to save space
+sudo apt --fix-broken install -y
+rm zulu-jdk.deb
 
 # Create server directory and download PaperMC
-mkdir papermcserver
+mkdir -p papermcserver
 cd papermcserver
-wget https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/77/downloads/paper-1.21.4-77.jar
-mv paper-1.21.4-77.jar papermcserver.jar
+wget -O papermcserver.jar https://api.papermc.io/v2/projects/paper/versions/1.21.4/builds/77/downloads/paper-1.21.4-77.jar
 
 # Create plugins directory and download GeyserMC and Floodgate
-mkdir plugins
+mkdir -p plugins
 cd plugins
 wget -O Geyser-Spigot.jar https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
 wget -O floodgate-spigot.jar https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
@@ -31,10 +30,11 @@ while [ ! -f "eula.txt" ]; do
   sleep 1
 done
 
-# Stop the server after eula.txt is created
-echo "Stopping the server..."
+# Stop the server after `eula.txt` is created
+echo "Stopping the server after `eula.txt` was created..."
 kill "$SERVER_PID"
-sleep 5  # Allow the process to stop
+wait "$SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
+echo "Server stopped."
 
 # Accept EULA
 echo "Accepting EULA..."
@@ -45,16 +45,17 @@ echo "Starting the server to load plugins..."
 java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
 
-# Wait for GeyserMC config.yml to be created
+# Wait for `config.yml` to be created
 echo "Waiting for GeyserMC config.yml to be generated..."
 while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
-  sleep 1  # Check every second until the file exists
+  sleep 1
 done
 
-# Stop the server after config.yml is created
+# Stop the server after `config.yml` is created
 echo "Stopping the server after plugins are initialized..."
 kill "$PLUGIN_SERVER_PID"
-sleep 5  # Allow the process to stop
+wait "$PLUGIN_SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
+echo "Server stopped."
 
 # Modify GeyserMC auth-type to floodgate
 echo "Modifying GeyserMC config.yml..."
