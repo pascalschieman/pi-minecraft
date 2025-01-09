@@ -50,7 +50,7 @@ echo "eula=true" > eula.txt
 echo -e "\e[32mEnabling RCON for stopping the server...\e[0m"
 echo "enable-rcon=true" >> server.properties
 echo "rcon.port=25575" >> server.properties
-echo "rcon.password=myStrongPassword123!" >> server.properties
+echo "rcon.password=myStrongPassword123" >> server.properties
 
 # Start the server to load plugins
 echo -e "\e[32mStarting the server to load plugins...\e[0m"
@@ -63,9 +63,11 @@ while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
   sleep 1
 done
 
+sleep 60
+
 # Send `/stop` to the server via RCON to stop it gracefully
 echo -e "\e[32mStopping the server gracefully after plugins are initialized...\e[0m"
-mcrcon -H 127.0.0.1 -P 25575 -p myStrongPassword123! "stop"
+mcrcon -H 127.0.0.1 -P 25575 -p myStrongPassword123 "stop"
 sleep 5  # Give the server time to shut down
 
 # Modify GeyserMC auth-type to floodgate
