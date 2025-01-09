@@ -6,12 +6,14 @@ wget -O zulu-jdk.deb 'https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jdk23.0.1-li
 sudo dpkg -i zulu-jdk.deb
 sudo apt --fix-broken install -y
 rm zulu-jdk.deb  # Remove .deb to save space
-sudo apt install git build-essential -y  # Install build tools
+
+# Install Git and build tools for `mcrcon`
+sudo apt install git build-essential -y
 git clone https://github.com/Tiiffi/mcrcon.git
 cd mcrcon
 make
 sudo make install
-cd ..
+cd ..  # Return to main directory
 
 # Create server directory and download PaperMC
 mkdir -p papermcserver
@@ -48,6 +50,9 @@ echo "eula=true" > eula.txt
 
 # Enable RCON in server.properties
 echo -e "\e[32mEnabling RCON for stopping the server...\e[0m"
+while [ ! -f "server.properties" ]; do
+  sleep 1
+done
 echo "enable-rcon=true" >> server.properties
 echo "rcon.port=25575" >> server.properties
 echo "rcon.password=myStrongPassword123" >> server.properties
@@ -63,10 +68,14 @@ while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
   sleep 1
 done
 
-sleep 60
+# Wait for RCON to be ready before sending the stop command
+echo -e "\e[32mWaiting for RCON to be ready...\e[0m"
+while ! grep -q "RCON running on" logs/latest.log; do
+  sleep 1
+done
 
 # Send `/stop` to the server via RCON to stop it gracefully
-echo -e "\e[32mStopping the server gracefully after plugins are initialized...\e[0m"
+echo -e "\e[32mSending /stop command via RCON...\e[0m"
 mcrcon -H 127.0.0.1 -P 25575 -p myStrongPassword123 "stop"
 sleep 5  # Give the server time to shut down
 
