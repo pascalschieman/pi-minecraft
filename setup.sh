@@ -30,9 +30,9 @@ while [ ! -f "eula.txt" ]; do
   sleep 1
 done
 
-# Stop the server after `eula.txt` is created
-echo "Stopping the server after `eula.txt` was created..."
-kill "$SERVER_PID"
+# Stop the server gracefully after `eula.txt` is created
+echo "Stopping the server gracefully after `eula.txt` was created..."
+kill -SIGTERM "$SERVER_PID"
 wait "$SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
 echo "Server stopped."
 
@@ -51,9 +51,9 @@ while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
   sleep 1
 done
 
-# Stop the server after `config.yml` is created
-echo "Stopping the server after plugins are initialized..."
-kill "$PLUGIN_SERVER_PID"
+# Stop the server gracefully after plugins are initialized
+echo "Stopping the server gracefully after plugins are initialized..."
+kill -SIGTERM "$PLUGIN_SERVER_PID"
 wait "$PLUGIN_SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
 echo "Server stopped."
 
