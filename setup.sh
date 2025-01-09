@@ -6,6 +6,12 @@ wget -O zulu-jdk.deb 'https://cdn.azul.com/zulu/bin/zulu23.30.13-ca-jdk23.0.1-li
 sudo dpkg -i zulu-jdk.deb
 sudo apt --fix-broken install -y
 rm zulu-jdk.deb  # Remove .deb to save space
+sudo apt install git build-essential -y  # Install build tools
+git clone https://github.com/Tiiffi/mcrcon.git
+cd mcrcon
+make
+sudo make install
+cd ..
 
 # Create server directory and download PaperMC
 mkdir -p papermcserver
