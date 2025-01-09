@@ -13,18 +13,20 @@ mv paper-1.21.4-77.jar papermcserver.jar
 mkdir plugins
 cd plugins
 wget -O Geyser-Spigot.jar https://download.geysermc.org/v2/projects/geyser/versions/latest/builds/latest/downloads/spigot
-#mv spigot Geyser-Spigot.jar
 wget -O floodgate-spigot.jar https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
-#mv spigot floodgate-spigot.jar
 cd ..
 
 #first server initialization
-java -Xms2G -Xmx4G -jar papermcserver.jar nogui &
-SERVER_PID=$!
+java -Xms2G -Xmx4G -jar papermcserver.jar nogui
 sleep 20
 echo "eula=true" > eula.txt
 
-java -Xms2G -Xmx4G -jar papermcserver.jar nogui &
+# 6. Start the server to load plugins
+echo "Starting the server again to load plugins..."
+java -Xms1G -Xmx2G -jar "$JAR_FILE" nogui &
+PLUGIN_SERVER_PID=$!
+sleep 30  # Wait 30 seconds to ensure all plugins are loaded
+kill "$PLUGIN_SERVER_PID"
 
 cd plugins/Geyser-Spigot
 sed -i 's/auth-type: .*/auth-type: floodgate/' config.yml
