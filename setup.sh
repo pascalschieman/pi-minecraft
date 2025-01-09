@@ -20,30 +20,31 @@ wget -O Geyser-Spigot.jar https://download.geysermc.org/v2/projects/geyser/versi
 wget -O floodgate-spigot.jar https://download.geysermc.org/v2/projects/floodgate/versions/latest/builds/latest/downloads/spigot
 cd ..
 
-# First server initialization (run in the background)
+# First server initialization
 echo "Starting the server for initialization..."
-java -Xms2G -Xmx3G -jar papermcserver.jar nogui &
+java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
+SERVER_PID=$!
 
-# Wait for `eula.txt` to be generated
+# Wait until `eula.txt` is created
 echo "Waiting for eula.txt to be generated..."
 while [ ! -f "eula.txt" ]; do
-  sleep 1  # Check every second until the file exists
+  sleep 1
 done
 
-# Stop the server once `eula.txt` is generated
-echo "Stopping the server after eula.txt was created..."
-SERVER_PID=$(pgrep -f papermcserver.jar)
+# Stop the server gracefully
+echo "Stopping the server..."
 kill "$SERVER_PID"
+sleep 5  # Allow the server process to stop completely
 
 # Accept EULA
 echo "Accepting EULA..."
 echo "eula=true" > eula.txt
 
 # Start the server to load plugins
-echo "Starting the server again to load plugins..."
-java -Xms2G -Xmx3G -jar papermcserver.jar nogui &
+echo "Starting the server to load plugins..."
+java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
-sleep 120  # Wait 120 seconds for plugins to load
+sleep 60  # Reduced wait time to avoid freezing
 kill "$PLUGIN_SERVER_PID"
 
 # Modify GeyserMC auth-type to floodgate
@@ -57,4 +58,4 @@ fi
 
 # Final server start
 echo "Starting the server with final configuration..."
-java -Xms2G -Xmx3G -jar papermcserver.jar nogui
+java -Xms1G -Xmx2G -jar papermcserver.jar nogui
