@@ -20,47 +20,47 @@ wget -O floodgate-spigot.jar https://download.geysermc.org/v2/projects/floodgate
 cd ..
 
 # First server initialization
-echo "Starting the server for initialization..."
+echo -e "\e[32mStarting the server for initialization...\e[0m"
 java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
 SERVER_PID=$!
 
 # Wait until `eula.txt` is created
-echo "Waiting for eula.txt to be generated..."
+echo -e "\e[32mWaiting for eula.txt to be generated...\e[0m"
 while [ ! -f "eula.txt" ]; do
   sleep 1
 done
 
 # Stop the server gracefully after `eula.txt` is created
-echo "Stopping the server gracefully after `eula.txt` was created..."
+echo -e "\e[32mStopping the server gracefully after eula.txt was created...\e[0m"
 kill -SIGTERM "$SERVER_PID"
 wait "$SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
-echo "Server stopped."
+echo -e "\e[32mServer stopped.\e[0m"
 
 # Accept EULA
-echo "Accepting EULA..."
+echo -e "\e[32mAccepting EULA...\e[0m"
 echo "eula=true" > eula.txt
 
 # Start the server to load plugins
-echo "Starting the server to load plugins..."
+echo -e "\e[32mStarting the server to load plugins...\e[0m"
 java -Xms1G -Xmx2G -jar papermcserver.jar nogui &
 PLUGIN_SERVER_PID=$!
 
 # Wait for `config.yml` to be created
-echo "Waiting for GeyserMC config.yml to be generated..."
+echo -e "\e[32mWaiting for GeyserMC config.yml to be generated...\e[0m"
 while [ ! -f "plugins/Geyser-Spigot/config.yml" ]; do
   sleep 1
 done
 
 # Stop the server gracefully after plugins are initialized
-echo "Stopping the server gracefully after plugins are initialized..."
+echo -e "\e[32mStopping the server gracefully after plugins are initialized...\e[0m"
 kill -SIGTERM "$PLUGIN_SERVER_PID"
 wait "$PLUGIN_SERVER_PID" 2>/dev/null  # Wait for the process to exit completely
-echo "Server stopped."
+echo -e "\e[32mServer stopped.\e[0m"
 
 # Modify GeyserMC auth-type to floodgate
-echo "Modifying GeyserMC config.yml..."
+echo -e "\e[32mModifying GeyserMC config.yml...\e[0m"
 sed -i 's/auth-type: .*/auth-type: floodgate/' plugins/Geyser-Spigot/config.yml
 
 # Final server start
-echo "Starting the server with final configuration..."
+echo -e "\e[32mStarting the server with final configuration...\e[0m"
 java -Xms1G -Xmx2G -jar papermcserver.jar nogui
